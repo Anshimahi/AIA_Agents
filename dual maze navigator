@@ -1,0 +1,46 @@
+from collections import deque
+
+maze = [
+ ['A1',0, 'K', 1, 0, 0],
+ [ 0 , 1,  0 , 0, 'K',1],
+ [ 0 , 0,  0 , 1,  0 ,0],
+ [ 1 , 'K',0 , 0,  1 ,0],
+ [ 0 , 0,  1 , 0,  0 ,'K'],
+ [ 0 , 0,  0 , 1,  0 ,'A2']
+]
+
+R, C = len(maze), len(maze[0])
+starts = {"A1": (0,0), "A2": (5,5)}
+
+visited = set([starts["A1"], starts["A2"]])
+keys, paths = [], {"A1": [], "A2": []}
+
+q = deque([(starts["A1"], "A1"), (starts["A2"], "A2")])
+
+# --------------- BFS Exploration ---------------
+while q:
+    (r,c), agent = q.popleft()
+    paths[agent].append((r,c))
+
+    # collect key
+    if maze[r][c] == 'K':
+        keys.append((r,c))
+        maze[r][c] = 0  # key removed
+
+    # explore neighbors
+    for dr,dc in [(1,0),(-1,0),(0,1),(0,-1)]:
+        nr, nc = r+dr, c+dc
+        if 0 <= nr < R and 0 <= nc < C and maze[nr][nc] != 1 and (nr,nc) not in visited:
+            visited.add((nr,nc))
+            q.append(((nr,nc), agent))
+
+# --------------- PRINT RESULTS ---------------
+print("\nKeys collected:", keys)
+
+print("\nPaths (A1 & A2):")
+for agent in paths:
+    print(agent, ":", paths[agent])
+
+print("\nGrid After Collecting Keys:")
+for row in maze:
+    print(row)
